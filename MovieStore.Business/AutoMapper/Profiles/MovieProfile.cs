@@ -14,6 +14,7 @@ namespace MovieStore.Business.AutoMapper.Profiles
         public MovieProfile()
         {
             CreateMap<MovieAddDto, Movie>();
+            CreateMap<MovieUpdateDto, Movie>();
             CreateMap<Movie, MovieDetailDto>()
                 .ForMember(dest=>dest.Director,opt=>opt.MapFrom(src=>src.Director.Name+" "+src.Director.Surname))
                 .ForMember(dest=>dest.Genre,opt=>opt.MapFrom(src=>src.Genre.Name));

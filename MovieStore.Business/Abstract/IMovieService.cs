@@ -12,6 +12,8 @@ namespace MovieStore.Business.Abstract
     {
         IResult Add(MovieAddDto movieAddDto);
         IResult Delete(int movieId);
+        IResult Update(int movieId,MovieUpdateDto movieUpdateDto);
         IDataResult<MovieDetailDto> GetById(int movieId);
+        IDataResult<List<MovieDetailDto>> GetAll();
     }
 }

@@ -16,6 +16,18 @@ namespace MovieStore.WebAPI.Controllers
             _movieService = movieService;
         }
 
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            var result = _movieService.GetAll();
+            if (result.Success)
+            {
+                return Ok(result.Data);
+            }
+
+            return BadRequest(result.Message);
+        }
+
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
@@ -47,6 +59,18 @@ namespace MovieStore.WebAPI.Controllers
             if (result.Success)
             {
                 return NoContent();
+            }
+
+            return BadRequest(result.Message);
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult Update(int id,MovieUpdateDto movieUpdateDto)
+        {
+            var result = _movieService.Update(id, movieUpdateDto);
+            if (result.Success)
+            {
+                return Ok(result.Message);
             }
 
             return BadRequest(result.Message);
