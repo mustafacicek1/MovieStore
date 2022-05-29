@@ -12,14 +12,14 @@ namespace MovieStore.DataAccess.Concrete
     public class UnitOfWork : IUnitOfWork
     {
         private readonly MovieStoreDbContext _context;
-        private readonly EfCustomerRepository _customerRepository;
-        private readonly EfMovieActorRepository _movieActorRepository;
-        private readonly EfActorRepository _actorRepository;
-        private readonly EfMovieRepository _movieRepository;
-        private readonly EfOrderRepository _orderRepository;
-        private readonly EfDirectorRepository _directorRepository;
-        private readonly EfCustomerGenreRepository _customerGenreRepository;
-        private readonly EfCustomerMovieRepository _customerMovieRepository;
+        private EfCustomerRepository _customerRepository;
+        private EfMovieActorRepository _movieActorRepository;
+        private EfActorRepository _actorRepository;
+        private EfMovieRepository _movieRepository;
+        private EfOrderRepository _orderRepository;
+        private EfDirectorRepository _directorRepository;
+        private EfCustomerGenreRepository _customerGenreRepository;
+        private EfCustomerMovieRepository _customerMovieRepository;
         public UnitOfWork(MovieStoreDbContext context)
         {
             _context = context;

@@ -67,7 +67,7 @@ namespace MovieStore.WebAPI.Controllers
         [HttpPut("{id}")]
         public IActionResult Update(int id,MovieUpdateDto movieUpdateDto)
         {
-            var result = _movieService.Update(id, movieUpdateDto);
+            var result = _movieService.Update(id,movieUpdateDto);
             if (result.Success)
             {
                 return Ok(result.Message);

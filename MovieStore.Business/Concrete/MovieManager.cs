@@ -17,7 +17,7 @@ namespace MovieStore.Business.Concrete
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        public MovieManager(IUnitOfWork unitOfWork,IMapper mapper)
+        public MovieManager(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -45,7 +45,7 @@ namespace MovieStore.Business.Concrete
                 return result;
             }
 
-            var movie = _unitOfWork.Movies.Get(x=>x.Id== movieId);
+            var movie = _unitOfWork.Movies.Get(x => x.Id == movieId);
             _unitOfWork.Movies.Delete(movie);
             _unitOfWork.SaveChanges();
             return new SuccessResult("Movie deleted!");
@@ -53,7 +53,7 @@ namespace MovieStore.Business.Concrete
 
         public IDataResult<List<MovieDetailDto>> GetAll()
         {
-            var movies = _unitOfWork.Movies.GetAll(null,x=>x.Director,x=>x.Genre);
+            var movies = _unitOfWork.Movies.GetAll(null, x => x.Director, x => x.Genre);
             return new SuccessDataResult<List<MovieDetailDto>>(_mapper.Map<List<MovieDetailDto>>(movies));
         }
 
@@ -65,20 +65,24 @@ namespace MovieStore.Business.Concrete
                 return new ErrorDataResult<MovieDetailDto>(result.Message);
             }
 
-            var movie = _unitOfWork.Movies.Get(x=>x.Id== movieId,x=>x.Director,x=>x.Genre);
+            var movie = _unitOfWork.Movies.Get(x => x.Id == movieId, x => x.Director, x => x.Genre);
             return new SuccessDataResult<MovieDetailDto>(_mapper.Map<MovieDetailDto>(movie));
         }
 
-        public IResult Update(int movieId,MovieUpdateDto movieUpdateDto)
+        public IResult Update(int movieId, MovieUpdateDto movieUpdateDto)
         {
-            IResult result = BusinessRules.Run(CheckIfMovieIdDontExist(movieId));
-            if(result!=null)
+            IResult result = BusinessRules.Run(CheckIfMovieIdDontExist(movieId),
+                CheckIfMovieAlreadyExistForUpdate(movieId, movieUpdateDto.Name));
+            if (result != null)
             {
                 return result;
             }
 
-            var movie = _mapper.Map<Movie>(movieUpdateDto);
-            movie.Id = movieId;
+            var movie = _unitOfWork.Movies.Get(x => x.Id == movieId);
+            movie.Name = movieUpdateDto.Name == default ? movie.Name : movieUpdateDto.Name;
+            movie.GenreId = movieUpdateDto.GenreId == default ? movie.GenreId : movieUpdateDto.GenreId;
+            movie.DirectorId = movieUpdateDto.DirectorId == default ? movie.DirectorId : movieUpdateDto.DirectorId;
+            movie.Price = movieUpdateDto.Price == default ? movie.Price : movieUpdateDto.Price;
             _unitOfWork.Movies.Update(movie);
             _unitOfWork.SaveChanges();
             return new SuccessResult("Movie updated");
@@ -87,6 +91,17 @@ namespace MovieStore.Business.Concrete
         private IResult CheckIfMovieAlreadyExist(string movieName)
         {
             var movie = _unitOfWork.Movies.Get(x => x.Name == movieName);
+            if (movie is not null)
+            {
+                return new ErrorResult("Movie already exist");
+            }
+
+            return new SuccessResult();
+        }
+
+        private IResult CheckIfMovieAlreadyExistForUpdate(int movieId, string movieName)
+        {
+            var movie = _unitOfWork.Movies.Get(x => x.Name == movieName && x.Id != movieId);
             if (movie is not null)
             {
                 return new ErrorResult("Movie already exist");
