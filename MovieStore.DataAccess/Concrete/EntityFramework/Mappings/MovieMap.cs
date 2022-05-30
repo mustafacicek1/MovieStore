@@ -11,6 +11,7 @@ namespace MovieStore.DataAccess.Concrete.EntityFramework.Mappings
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Name).HasMaxLength(25);
             builder.Property(x => x.Price).HasColumnType("money");
+            builder.Property(x => x.Status).HasDefaultValue(true);
 
             builder.HasMany(x => x.Orders).WithOne(y => y.Movie)
                 .HasForeignKey(y => y.MovieId);

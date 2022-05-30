@@ -11,9 +11,10 @@ namespace MovieStore.Business.Abstract
     public interface IMovieService
     {
         IResult Add(MovieAddDto movieAddDto);
-        IResult Delete(int movieId);
+        IResult SetStatus(int movieId);
         IResult Update(int movieId,MovieUpdateDto movieUpdateDto);
         IDataResult<MovieDetailDto> GetById(int movieId);
         IDataResult<List<MovieDetailDto>> GetAll();
+        IDataResult<List<MovieDetailDto>> GetInActiveMovies();
     }
 }

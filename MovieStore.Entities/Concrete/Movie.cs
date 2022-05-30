@@ -20,6 +20,7 @@ namespace MovieStore.Entities.Concrete
         public decimal Price { get; set; }
         public int GenreId { get; set; }
         public int DirectorId { get; set; }
+        public bool Status { get; set; } = true;
 
         public Genre Genre { get; set; }
         public Director Director { get; set; }

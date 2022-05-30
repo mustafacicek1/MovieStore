@@ -37,23 +37,23 @@ namespace MovieStore.Business.Concrete
             return new SuccessResult("Movie added");
         }
 
-        public IResult Delete(int movieId)
+        public IResult SetStatus(int movieId)
         {
-            IResult result = BusinessRules.Run(CheckIfMovieIdDontExist(movieId));
+            IResult result = BusinessRules.Run(CheckIfMovieIdDontExistForSetStatus(movieId));
             if (result != null)
             {
                 return result;
             }
 
             var movie = _unitOfWork.Movies.Get(x => x.Id == movieId);
-            _unitOfWork.Movies.Delete(movie);
+            movie.Status=movie.Status==false?movie.Status=true:movie.Status=false;
             _unitOfWork.SaveChanges();
-            return new SuccessResult("Movie deleted!");
+            return new SuccessResult("Movie status changed!");
         }
 
         public IDataResult<List<MovieDetailDto>> GetAll()
         {
-            var movies = _unitOfWork.Movies.GetAll(null, x => x.Director, x => x.Genre);
+            var movies = _unitOfWork.Movies.GetAll(x => x.Status == true, x => x.Director, x => x.Genre);
             return new SuccessDataResult<List<MovieDetailDto>>(_mapper.Map<List<MovieDetailDto>>(movies));
         }
 
@@ -65,7 +65,7 @@ namespace MovieStore.Business.Concrete
                 return new ErrorDataResult<MovieDetailDto>(result.Message);
             }
 
-            var movie = _unitOfWork.Movies.Get(x => x.Id == movieId, x => x.Director, x => x.Genre);
+            var movie = _unitOfWork.Movies.Get(x => x.Id == movieId && x.Status==true, x => x.Director, x => x.Genre);
             return new SuccessDataResult<MovieDetailDto>(_mapper.Map<MovieDetailDto>(movie));
         }
 
@@ -112,11 +112,26 @@ namespace MovieStore.Business.Concrete
 
         private IResult CheckIfMovieIdDontExist(int movieId)
         {
+            var movie = _unitOfWork.Movies.Get(x => x.Id == movieId &&x.Status==true);
+            if (movie is null)
+                return new ErrorResult("Movie not found");
+
+            return new SuccessResult();
+        }
+
+        private IResult CheckIfMovieIdDontExistForSetStatus(int movieId)
+        {
             var movie = _unitOfWork.Movies.Get(x => x.Id == movieId);
             if (movie is null)
                 return new ErrorResult("Movie not found");
 
             return new SuccessResult();
+        }
+
+        public IDataResult<List<MovieDetailDto>> GetInActiveMovies()
+        {
+            var inActiveMovies =_unitOfWork.Movies.GetAll(x => x.Status == false, x => x.Director, x => x.Genre);
+            return new SuccessDataResult<List<MovieDetailDto>>(_mapper.Map<List<MovieDetailDto>>(inActiveMovies));
         }
     }
 }

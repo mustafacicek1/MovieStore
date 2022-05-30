@@ -28,6 +28,18 @@ namespace MovieStore.WebAPI.Controllers
             return BadRequest(result.Message);
         }
 
+        [HttpGet("inactive")]
+        public IActionResult GetInActiveMovies()
+        {
+            var result = _movieService.GetInActiveMovies();
+            if (result.Success)
+            {
+                return Ok(result.Data);
+            }
+
+            return BadRequest(result.Message);
+        }
+
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
@@ -52,13 +64,13 @@ namespace MovieStore.WebAPI.Controllers
             return BadRequest(result.Message);
         }
 
-        [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        [HttpPost("setstatus/{id}")]
+        public IActionResult SetStatus(int id)
         {
-            var result = _movieService.Delete(id);
+            var result = _movieService.SetStatus(id);
             if (result.Success)
             {
-                return NoContent();
+                return Ok(result.Message);
             }
 
             return BadRequest(result.Message);
