@@ -51,10 +51,10 @@ namespace MovieStore.Business.Concrete
             return new SuccessResult("Movie status changed!");
         }
 
-        public IDataResult<List<MovieDetailDto>> GetAll()
+        public IDataResult<List<MoviesDto>> GetAll()
         {
-            var movies = _unitOfWork.Movies.GetAll(x => x.Status == true, x => x.Director, x => x.Genre);
-            return new SuccessDataResult<List<MovieDetailDto>>(_mapper.Map<List<MovieDetailDto>>(movies));
+            var movies = _unitOfWork.Movies.GetAll(x=>x.Status==true,x=>x.Genre);
+            return new SuccessDataResult<List<MoviesDto>>(_mapper.Map<List<MoviesDto>>(movies));
         }
 
         public IDataResult<MovieDetailDto> GetById(int movieId)
@@ -66,7 +66,13 @@ namespace MovieStore.Business.Concrete
             }
 
             var movie = _unitOfWork.Movies.Get(x => x.Id == movieId && x.Status==true, x => x.Director, x => x.Genre);
-            return new SuccessDataResult<MovieDetailDto>(_mapper.Map<MovieDetailDto>(movie));
+            var movieActors = _unitOfWork.MovieActors.GetAll(x => x.MovieId == movieId, x => x.Actor);
+            MovieDetailDto vm = _mapper.Map<MovieDetailDto>(movie);
+            foreach (var actor in movieActors)
+            {
+                vm.Actors.Add(actor.Actor.Name + " " + actor.Actor.Surname);
+            }
+            return new SuccessDataResult<MovieDetailDto>(vm);
         }
 
         public IResult Update(int movieId, MovieUpdateDto movieUpdateDto)
@@ -128,10 +134,10 @@ namespace MovieStore.Business.Concrete
             return new SuccessResult();
         }
 
-        public IDataResult<List<MovieDetailDto>> GetInActiveMovies()
+        public IDataResult<List<MoviesDto>> GetInActiveMovies()
         {
-            var inActiveMovies =_unitOfWork.Movies.GetAll(x => x.Status == false, x => x.Director, x => x.Genre);
-            return new SuccessDataResult<List<MovieDetailDto>>(_mapper.Map<List<MovieDetailDto>>(inActiveMovies));
+            var inActiveMovies =_unitOfWork.Movies.GetAll(x => x.Status == false, x => x.Genre);
+            return new SuccessDataResult<List<MoviesDto>>(_mapper.Map<List<MoviesDto>>(inActiveMovies));
         }
     }
 }

@@ -17,6 +17,8 @@ namespace MovieStore.Business.Extensions
             serviceCollection.AddScoped<IMovieService, MovieManager>();
             serviceCollection.AddScoped<ICustomerService, CustomerManager>();
             serviceCollection.AddScoped<IAuthService, AuthManager>();
+            serviceCollection.AddScoped<IActorService, ActorManager>();
+            serviceCollection.AddScoped<IDirectorService, DirectorManager>();
             serviceCollection.AddSingleton<ITokenHelper, JwtHelper>();
 
             return serviceCollection;

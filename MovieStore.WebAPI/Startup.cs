@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace MovieStore.WebAPI
@@ -32,7 +33,9 @@ namespace MovieStore.WebAPI
         {
             services.AddControllers();
 
-            services.AddAutoMapper(typeof(MovieProfile),typeof(CustomerProfile));
+            services.AddAutoMapper(
+                typeof(MovieProfile),typeof(CustomerProfile),typeof(ActorProfile),typeof(DirectorProfile)
+                );
 
             services.LoadMyServices();
 

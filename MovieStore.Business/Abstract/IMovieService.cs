@@ -14,7 +14,7 @@ namespace MovieStore.Business.Abstract
         IResult SetStatus(int movieId);
         IResult Update(int movieId,MovieUpdateDto movieUpdateDto);
         IDataResult<MovieDetailDto> GetById(int movieId);
-        IDataResult<List<MovieDetailDto>> GetAll();
-        IDataResult<List<MovieDetailDto>> GetInActiveMovies();
+        IDataResult<List<MoviesDto>> GetAll();
+        IDataResult<List<MoviesDto>> GetInActiveMovies();
     }
 }
