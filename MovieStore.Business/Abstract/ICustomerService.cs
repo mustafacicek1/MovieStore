@@ -1,5 +1,6 @@
 ﻿using MovieStore.Core.Utilities.Results;
 using MovieStore.Entities.Concrete;
+using MovieStore.Entities.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,10 @@ namespace MovieStore.Business.Abstract
     {
         IResult Add(Customer customer);
         IResult Delete(int customerId);
+        IDataResult<Customer> GetByMail(string mail);
         IDataResult<Customer> VerifyCustomer(string email, string password);
         IResult CheckIfCustomerEmailAlreadyExist(string email);
+        IResult BuyMovie(Customer customer,MovieDetailDto movie);
+        IDataResult<List<OrdersDto>> GetMyOrders(Customer customer);
     }
 }

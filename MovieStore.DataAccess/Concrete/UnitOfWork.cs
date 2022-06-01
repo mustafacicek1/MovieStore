@@ -19,7 +19,6 @@ namespace MovieStore.DataAccess.Concrete
         private EfOrderRepository _orderRepository;
         private EfDirectorRepository _directorRepository;
         private EfCustomerGenreRepository _customerGenreRepository;
-        private EfCustomerMovieRepository _customerMovieRepository;
         public UnitOfWork(MovieStoreDbContext context)
         {
             _context = context;
@@ -28,8 +27,6 @@ namespace MovieStore.DataAccess.Concrete
         public IActorRepository Actors => _actorRepository ?? new EfActorRepository(_context);
 
         public ICustomerGenreRepository CustomerGenres => _customerGenreRepository ?? new EfCustomerGenreRepository(_context);
-
-        public ICustomerMovieRepository CustomerMovies => _customerMovieRepository ?? new EfCustomerMovieRepository(_context);
 
         public ICustomerRepository Customers => _customerRepository ?? new EfCustomerRepository(_context);
 

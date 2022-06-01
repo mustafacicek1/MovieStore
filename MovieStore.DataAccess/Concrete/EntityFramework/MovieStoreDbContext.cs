@@ -15,7 +15,6 @@ namespace MovieStore.DataAccess.Concrete.EntityFramework
         public DbSet<MovieActor> MovieActors { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<CustomerGenre> CustomerGenres { get; set; }
-        public DbSet<CustomerMovie> CustomerMovies { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

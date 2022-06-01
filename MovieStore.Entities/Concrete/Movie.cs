@@ -13,7 +13,6 @@ namespace MovieStore.Entities.Concrete
         {
             MovieActors = new HashSet<MovieActor>();
             Orders = new HashSet<Order>();
-            CustomerMovies = new HashSet<CustomerMovie>();
         }
         public int Id { get; set; }
         public string Name { get; set; }
@@ -26,6 +25,5 @@ namespace MovieStore.Entities.Concrete
         public Director Director { get; set; }
         public ICollection<MovieActor> MovieActors { get; set; }
         public ICollection<Order> Orders { get; set; }
-        public ICollection<CustomerMovie> CustomerMovies { get; set; }
     }
 }

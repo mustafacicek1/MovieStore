@@ -34,7 +34,7 @@ namespace MovieStore.WebAPI
             services.AddControllers();
 
             services.AddAutoMapper(
-                typeof(MovieProfile),typeof(CustomerProfile),typeof(ActorProfile),typeof(DirectorProfile)
+                typeof(MovieProfile),typeof(CustomerProfile),typeof(ActorProfile),typeof(DirectorProfile),typeof(OrderProfile)
                 );
 
             services.LoadMyServices();

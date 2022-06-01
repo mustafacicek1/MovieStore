@@ -6,7 +6,6 @@ namespace MovieStore.DataAccess.Abstract
     {
         IActorRepository Actors {get;}
         ICustomerGenreRepository CustomerGenres { get; }
-        ICustomerMovieRepository CustomerMovies { get; }
         ICustomerRepository Customers { get; }
         IDirectorRepository Directors { get; }
         IMovieActorRepository MovieActors { get; }
