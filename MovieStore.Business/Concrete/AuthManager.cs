@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using MovieStore.Business.Abstract;
+using MovieStore.Business.ValidationRules.FluentValidation;
+using MovieStore.Core.CrossCuttingConcerns.Validation;
 using MovieStore.Core.Utilities.Business;
 using MovieStore.Core.Utilities.Results;
 using MovieStore.Core.Utilities.Security.JWT;
@@ -27,6 +29,8 @@ namespace MovieStore.Business.Concrete
         }
         public IDataResult<AccessToken> CustomerLogin(CustomerLoginDto customerLoginDto)
         {
+            ValidationTool.Validate(new CustomerLoginDtoValidator(), customerLoginDto);
+
             var result = _customerService.VerifyCustomer(customerLoginDto.Email, customerLoginDto.Password);
             if (!result.Success)
             {
@@ -42,6 +46,8 @@ namespace MovieStore.Business.Concrete
 
         public IResult CustomerRegister(CustomerRegisterDto customerRegisterDto)
         {
+            ValidationTool.Validate(new CustomerRegisterDtoValidator(), customerRegisterDto);
+
             var result = _customerService.CheckIfCustomerEmailAlreadyExist(customerRegisterDto.Email);
             if (!result.Success)
             {

@@ -13,4 +13,8 @@
     <ProjectReference Include="..\MovieStore.Core\MovieStore.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\" />
+  </ItemGroup>
+
 </Project>

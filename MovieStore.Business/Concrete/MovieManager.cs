@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using MovieStore.Business.Abstract;
+using MovieStore.Business.ValidationRules.FluentValidation;
+using MovieStore.Core.CrossCuttingConcerns.Validation;
 using MovieStore.Core.Utilities.Business;
 using MovieStore.Core.Utilities.Results;
 using MovieStore.DataAccess.Abstract;
@@ -25,6 +27,8 @@ namespace MovieStore.Business.Concrete
 
         public IResult Add(MovieAddDto movieAddDto)
         {
+            ValidationTool.Validate(new MovieAddDtoValidator(), movieAddDto);
+
             IResult result = BusinessRules.Run(CheckIfMovieAlreadyExist(movieAddDto.Name));
             if (result != null)
             {
@@ -77,6 +81,8 @@ namespace MovieStore.Business.Concrete
 
         public IResult Update(int movieId, MovieUpdateDto movieUpdateDto)
         {
+            ValidationTool.Validate(new MovieUpdateDtoValidator(),movieUpdateDto);
+
             IResult result = BusinessRules.Run(CheckIfMovieIdDontExist(movieId),
                 CheckIfMovieAlreadyExistForUpdate(movieId, movieUpdateDto.Name));
             if (result != null)

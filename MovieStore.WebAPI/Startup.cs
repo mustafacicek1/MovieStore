@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using MovieStore.Business.AutoMapper.Profiles;
 using MovieStore.Business.Extensions;
+using MovieStore.Core.Extensions;
 using MovieStore.Core.Utilities.Security.JWT;
 using System;
 using System.Collections.Generic;
@@ -32,10 +33,6 @@ namespace MovieStore.WebAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-
-            services.AddAutoMapper(
-                typeof(MovieProfile),typeof(CustomerProfile),typeof(ActorProfile),typeof(DirectorProfile),typeof(OrderProfile)
-                );
 
             services.LoadMyServices();
 
@@ -68,6 +65,8 @@ namespace MovieStore.WebAPI
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.ConfigureCustomExceptionMiddleware();
 
             app.UseEndpoints(endpoints =>endpoints.MapControllers());
         }

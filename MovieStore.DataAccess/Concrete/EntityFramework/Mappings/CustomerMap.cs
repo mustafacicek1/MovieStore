@@ -11,6 +11,8 @@ namespace MovieStore.DataAccess.Concrete.EntityFramework.Mappings
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Name).HasMaxLength(25);
             builder.Property(x => x.Surname).HasMaxLength(25);
+            builder.Property(x => x.Email).HasMaxLength(50);
+            builder.Property(x => x.Password).HasMaxLength(12);
         }
     }
 }

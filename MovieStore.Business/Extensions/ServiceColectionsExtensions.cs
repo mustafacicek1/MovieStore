@@ -8,6 +8,7 @@ using MovieStore.DataAccess.Concrete.EntityFramework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,6 +19,7 @@ namespace MovieStore.Business.Extensions
     {
         public static IServiceCollection LoadMyServices(this IServiceCollection serviceCollection)
         {
+            serviceCollection.AddAutoMapper(Assembly.GetExecutingAssembly());
             serviceCollection.AddDbContext<MovieStoreDbContext>();
             serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
             serviceCollection.AddScoped<IMovieService, MovieManager>();
