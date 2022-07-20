@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MovieStore.Business.Abstract;
 using MovieStore.Entities.Dtos;
+using System.Threading.Tasks;
 
 namespace MovieStore.WebAPI.Controllers
 {
@@ -41,9 +42,9 @@ namespace MovieStore.WebAPI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Add(DirectorAddDto directorAddDto)
+        public async Task<IActionResult> Add(DirectorAddDto directorAddDto)
         {
-            var result = _directorService.Add(directorAddDto);
+            var result = await _directorService.Add(directorAddDto);
             if (result.Success)
             {
                 return Ok(result.Message);
@@ -53,9 +54,9 @@ namespace MovieStore.WebAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(int id, DirectorUpdateDto directorUpdateDto)
+        public async Task<IActionResult> Update(int id, DirectorUpdateDto directorUpdateDto)
         {
-            var result = _directorService.Update(id, directorUpdateDto);
+            var result = await _directorService.Update(id, directorUpdateDto);
             if (result.Success)
             {
                 return Ok(result.Message);
@@ -65,14 +66,13 @@ namespace MovieStore.WebAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var result = _directorService.Delete(id);
+            var result = await _directorService.Delete(id);
             if (result.Success)
             {
                 return NoContent();
             }
-
             return BadRequest(result.Message);
         }
     }

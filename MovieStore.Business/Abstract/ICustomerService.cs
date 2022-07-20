@@ -11,12 +11,12 @@ namespace MovieStore.Business.Abstract
 {
     public interface ICustomerService
     {
-        IResult Add(Customer customer);
-        IResult Delete(int customerId);
+        Task<IResult> Add(Customer customer);
+        Task<IResult> Delete(int customerId);
         IDataResult<Customer> GetByMail(string mail);
         IDataResult<Customer> VerifyCustomer(string email, string password);
         IResult CheckIfCustomerEmailAlreadyExist(string email);
-        IResult BuyMovie(Customer customer,MovieDetailDto movie);
+        Task<IResult> BuyMovie(Customer customer,MovieDetailDto movie);
         IDataResult<List<OrdersDto>> GetMyOrders(Customer customer);
     }
 }

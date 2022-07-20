@@ -1,5 +1,7 @@
 ﻿
 
+using System.Threading.Tasks;
+
 namespace MovieStore.DataAccess.Abstract
 {
     public interface IUnitOfWork
@@ -11,6 +13,6 @@ namespace MovieStore.DataAccess.Abstract
         IMovieActorRepository MovieActors { get; }
         IMovieRepository Movies { get; }
         IOrderRepository Orders { get; }
-        int SaveChanges();
+        Task<int> SaveChangesAsync();
     }
 }

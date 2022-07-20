@@ -1,11 +1,7 @@
 ﻿using AutoMapper;
 using MovieStore.Entities.Concrete;
 using MovieStore.Entities.Dtos;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MovieStore.Business.AutoMapper.Profiles
 {
@@ -15,7 +11,8 @@ namespace MovieStore.Business.AutoMapper.Profiles
         {
             CreateMap<DirectorAddDto, Director>();
             CreateMap<Director, DirectorsDto>();
-            CreateMap<Director, DirectorDetailDto>();
+            CreateMap<Director, DirectorDetailDto>()
+                .ForMember(dest=>dest.Movies,opt=>opt.MapFrom(src=>src.Movies.Select(x=>x.Name)));
         }
     }
 }

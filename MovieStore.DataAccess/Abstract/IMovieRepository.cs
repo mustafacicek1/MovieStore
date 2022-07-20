@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace MovieStore.DataAccess.Abstract
 {
-    public interface IMovieRepository:IEntityRepository<Movie>
+    public interface IMovieRepository:IGenericRepository<Movie>
     {
     }
 }

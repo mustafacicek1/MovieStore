@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace MovieStore.DataAccess.Concrete.EntityFramework.Repositories
 {
-    public class EfMovieRepository:EfEntityRepositoryBase<Movie>,IMovieRepository
+    public class EfMovieRepository:GenericRepository<Movie>,IMovieRepository
     {
         public EfMovieRepository(DbContext context):base(context)
         {

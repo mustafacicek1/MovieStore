@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using MovieStore.Business.Abstract;
 using MovieStore.Business.ValidationRules.FluentValidation;
 using MovieStore.Core.CrossCuttingConcerns.Validation;
@@ -25,7 +26,7 @@ namespace MovieStore.Business.Concrete
             _mapper = mapper;
         }
 
-        public IResult Add(MovieAddDto movieAddDto)
+        public async Task<IResult> Add(MovieAddDto movieAddDto)
         {
             ValidationTool.Validate(new MovieAddDtoValidator(), movieAddDto);
 
@@ -36,12 +37,12 @@ namespace MovieStore.Business.Concrete
             }
 
             var movie = _mapper.Map<Movie>(movieAddDto);
-            _unitOfWork.Movies.Add(movie);
-            _unitOfWork.SaveChanges();
+            await _unitOfWork.Movies.AddAsync(movie);
+            await _unitOfWork.SaveChangesAsync();
             return new SuccessResult("Movie added");
         }
 
-        public IResult SetStatus(int movieId)
+        public async Task<IResult> SetStatus(int movieId)
         {
             IResult result = BusinessRules.Run(CheckIfMovieIdDontExistForSetStatus(movieId));
             if (result != null)
@@ -49,15 +50,15 @@ namespace MovieStore.Business.Concrete
                 return result;
             }
 
-            var movie = _unitOfWork.Movies.Get(x => x.Id == movieId);
+            var movie = await _unitOfWork.Movies.GetByIdAsync(movieId);
             movie.Status=movie.Status==false?movie.Status=true:movie.Status=false;
-            _unitOfWork.SaveChanges();
+            await _unitOfWork.SaveChangesAsync();
             return new SuccessResult("Movie status changed!");
         }
 
         public IDataResult<List<MoviesDto>> GetAll()
         {
-            var movies = _unitOfWork.Movies.GetAll(x=>x.Status==true,x=>x.Genre);
+            var movies = _unitOfWork.Movies.Where(x=>x.Status==true).Include(x=>x.Genre).ToList();
             return new SuccessDataResult<List<MoviesDto>>(_mapper.Map<List<MoviesDto>>(movies));
         }
 
@@ -69,17 +70,14 @@ namespace MovieStore.Business.Concrete
                 return new ErrorDataResult<MovieDetailDto>(result.Message);
             }
 
-            var movie = _unitOfWork.Movies.Get(x => x.Id == movieId && x.Status==true, x => x.Director, x => x.Genre);
-            var movieActors = _unitOfWork.MovieActors.GetAll(x => x.MovieId == movieId, x => x.Actor);
+            var movie = _unitOfWork.Movies.Where(x => x.Id == movieId && x.Status==true)
+                .Include(x=>x.Director).Include(x=>x.Genre).Include(x=>x.MovieActors).ThenInclude(x=>x.Actor).
+                FirstOrDefault();
             MovieDetailDto vm = _mapper.Map<MovieDetailDto>(movie);
-            foreach (var actor in movieActors)
-            {
-                vm.Actors.Add(actor.Actor.Name + " " + actor.Actor.Surname);
-            }
             return new SuccessDataResult<MovieDetailDto>(vm);
         }
 
-        public IResult Update(int movieId, MovieUpdateDto movieUpdateDto)
+        public async Task<IResult> Update(int movieId, MovieUpdateDto movieUpdateDto)
         {
             ValidationTool.Validate(new MovieUpdateDtoValidator(),movieUpdateDto);
 
@@ -90,19 +88,19 @@ namespace MovieStore.Business.Concrete
                 return result;
             }
 
-            var movie = _unitOfWork.Movies.Get(x => x.Id == movieId);
+            var movie = await _unitOfWork.Movies.GetByIdAsync(movieId);
             movie.Name = movieUpdateDto.Name == default ? movie.Name : movieUpdateDto.Name;
             movie.GenreId = movieUpdateDto.GenreId == default ? movie.GenreId : movieUpdateDto.GenreId;
             movie.DirectorId = movieUpdateDto.DirectorId == default ? movie.DirectorId : movieUpdateDto.DirectorId;
             movie.Price = movieUpdateDto.Price == default ? movie.Price : movieUpdateDto.Price;
             _unitOfWork.Movies.Update(movie);
-            _unitOfWork.SaveChanges();
+            await _unitOfWork.SaveChangesAsync();
             return new SuccessResult("Movie updated");
         }
 
         private IResult CheckIfMovieAlreadyExist(string movieName)
         {
-            var movie = _unitOfWork.Movies.Get(x => x.Name == movieName);
+            var movie = _unitOfWork.Movies.Where(x => x.Name == movieName).FirstOrDefault();
             if (movie is not null)
             {
                 return new ErrorResult("Movie already exist");
@@ -113,7 +111,7 @@ namespace MovieStore.Business.Concrete
 
         private IResult CheckIfMovieAlreadyExistForUpdate(int movieId, string movieName)
         {
-            var movie = _unitOfWork.Movies.Get(x => x.Name == movieName && x.Id != movieId);
+            var movie = _unitOfWork.Movies.Where(x => x.Name == movieName && x.Id != movieId).FirstOrDefault();
             if (movie is not null)
             {
                 return new ErrorResult("Movie already exist");
@@ -124,7 +122,7 @@ namespace MovieStore.Business.Concrete
 
         private IResult CheckIfMovieIdDontExist(int movieId)
         {
-            var movie = _unitOfWork.Movies.Get(x => x.Id == movieId &&x.Status==true);
+            var movie = _unitOfWork.Movies.Where(x => x.Id == movieId &&x.Status==true).FirstOrDefault();
             if (movie is null)
                 return new ErrorResult("Movie not found");
 
@@ -133,7 +131,7 @@ namespace MovieStore.Business.Concrete
 
         private IResult CheckIfMovieIdDontExistForSetStatus(int movieId)
         {
-            var movie = _unitOfWork.Movies.Get(x => x.Id == movieId);
+            var movie = _unitOfWork.Movies.Where(x => x.Id == movieId).FirstOrDefault();
             if (movie is null)
                 return new ErrorResult("Movie not found");
 
@@ -142,7 +140,7 @@ namespace MovieStore.Business.Concrete
 
         public IDataResult<List<MoviesDto>> GetInActiveMovies()
         {
-            var inActiveMovies =_unitOfWork.Movies.GetAll(x => x.Status == false, x => x.Genre);
+            var inActiveMovies =_unitOfWork.Movies.Where(x => x.Status == false).Include(x=>x.Genre).ToList();
             return new SuccessDataResult<List<MoviesDto>>(_mapper.Map<List<MoviesDto>>(inActiveMovies));
         }
     }

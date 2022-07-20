@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MovieStore.DataAccess.Abstract
 {
-    public interface IOrderRepository : IEntityRepository<Order>
+    public interface IOrderRepository : IGenericRepository<Order>
     {
     }
 }

@@ -15,7 +15,8 @@ namespace MovieStore.Business.AutoMapper.Profiles
         {
             CreateMap<ActorAddDto, Actor>();
             CreateMap<Actor, ActorsDto>();
-            CreateMap<Actor, ActorDetailDto>();
+            CreateMap<Actor, ActorDetailDto>().
+                ForMember(dest=>dest.Movies,opt=>opt.MapFrom(src=>src.MovieActors.Select(x=>x.Movie.Name)));
         }
     }
 }

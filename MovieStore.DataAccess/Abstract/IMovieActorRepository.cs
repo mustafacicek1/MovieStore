@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MovieStore.DataAccess.Abstract
 {
-    public interface IMovieActorRepository:IEntityRepository<MovieActor>
+    public interface IMovieActorRepository:IGenericRepository<MovieActor>
     {
     }
 }

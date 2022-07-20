@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace MovieStore.DataAccess.Concrete.EntityFramework.Repositories
 {
-    public class EfCustomerRepository : EfEntityRepositoryBase<Customer>, ICustomerRepository
+    public class EfCustomerRepository : GenericRepository<Customer>, ICustomerRepository
     {
         public EfCustomerRepository(DbContext context):base(context)
         {

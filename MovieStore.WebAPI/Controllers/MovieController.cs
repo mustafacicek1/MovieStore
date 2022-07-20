@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MovieStore.Business.Abstract;
 using MovieStore.Entities.Dtos;
+using System.Threading.Tasks;
 
 namespace MovieStore.WebAPI.Controllers
 {
@@ -53,9 +54,9 @@ namespace MovieStore.WebAPI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Add(MovieAddDto movieAddDto)
+        public async Task<IActionResult> Add(MovieAddDto movieAddDto)
         {
-            var result = _movieService.Add(movieAddDto);
+            var result = await _movieService.Add(movieAddDto);
             if (result.Success)
             {
                 return Ok(result.Message);
@@ -65,9 +66,9 @@ namespace MovieStore.WebAPI.Controllers
         }
 
         [HttpPost("setstatus/{id}")]
-        public IActionResult SetStatus(int id)
+        public async Task<IActionResult> SetStatus(int id)
         {
-            var result = _movieService.SetStatus(id);
+            var result = await _movieService.SetStatus(id);
             if (result.Success)
             {
                 return Ok(result.Message);
@@ -77,9 +78,9 @@ namespace MovieStore.WebAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(int id,MovieUpdateDto movieUpdateDto)
+        public async Task<IActionResult> Update(int id,MovieUpdateDto movieUpdateDto)
         {
-            var result = _movieService.Update(id,movieUpdateDto);
+            var result = await _movieService.Update(id,movieUpdateDto);
             if (result.Success)
             {
                 return Ok(result.Message);

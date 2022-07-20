@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using MovieStore.Business.Abstract;
 using MovieStore.Core.Utilities.Business;
 using MovieStore.Core.Utilities.Results;
@@ -23,29 +24,29 @@ namespace MovieStore.Business.Concrete
             _mapper = mapper;
         }
 
-        public IResult Add(Customer customer)
+        public async Task<IResult> Add(Customer customer)
         {
-            _unitOfWork.Customers.Add(customer);
-            _unitOfWork.SaveChanges();
+            await _unitOfWork.Customers.AddAsync(customer);
+            await _unitOfWork.SaveChangesAsync();
             return new SuccessResult();
         }
 
-        public IResult Delete(int customerId)
+        public async Task<IResult> Delete(int customerId)
         {
             IResult result = BusinessRules.Run(CheckIfCustomerIdNotExist(customerId));
             if (result!=null)
             {
                 return result;
             }
-            var customer = _unitOfWork.Customers.Get(x => x.Id == customerId);
-            _unitOfWork.Customers.Delete(customer);
-            _unitOfWork.SaveChanges();
+            var customer = await _unitOfWork.Customers.GetByIdAsync(customerId);
+            _unitOfWork.Customers.Remove(customer);
+            await _unitOfWork.SaveChangesAsync();
             return new SuccessResult();
         }
 
         public IResult CheckIfCustomerEmailAlreadyExist(string email)
         {
-            var customer = _unitOfWork.Customers.Get(x => x.Email == email);
+            var customer = _unitOfWork.Customers.Where(x=>x.Email==email).FirstOrDefault();
             if (customer != null)
             {
                 return new ErrorResult("This email already registered");
@@ -55,7 +56,7 @@ namespace MovieStore.Business.Concrete
 
         public IDataResult<Customer> VerifyCustomer(string email,string password)
         {
-            var customer = _unitOfWork.Customers.Get(x => x.Email == email&& x.Password == password);
+            var customer = _unitOfWork.Customers.Where(x => x.Email == email&& x.Password == password).FirstOrDefault();
             if (customer is null)
             {
                 return new ErrorDataResult<Customer>("Email or password incorrect");
@@ -65,7 +66,7 @@ namespace MovieStore.Business.Concrete
 
         private IResult CheckIfCustomerIdNotExist(int customerId)
         {
-            var customer = _unitOfWork.Customers.Get(x => x.Id == customerId);
+            var customer = _unitOfWork.Customers.Where(x=>x.Id==customerId).FirstOrDefault();
             if (customer is null)
             {
                 return new ErrorResult("Customer not found");
@@ -74,7 +75,7 @@ namespace MovieStore.Business.Concrete
             return new SuccessResult();
         }
 
-        public IResult BuyMovie(Customer customer,MovieDetailDto movie)
+        public async Task<IResult> BuyMovie(Customer customer,MovieDetailDto movie)
         {
             IResult result = BusinessRules.Run(CheckIfOrderAlreadyExist(customer.Id,movie.Id));
             if (result!=null)
@@ -90,14 +91,14 @@ namespace MovieStore.Business.Concrete
                 OrderDate = DateTime.Now
             };
 
-            _unitOfWork.Orders.Add(order);
-            _unitOfWork.SaveChanges();
+            await _unitOfWork.Orders.AddAsync(order);
+            await _unitOfWork.SaveChangesAsync();
             return new SuccessResult("Movie bought successfully");
         }
 
         private IResult CheckIfOrderAlreadyExist(int customerId,int movieId)
         {
-            var order = _unitOfWork.Orders.Get(x => x.CustomerId == customerId && x.MovieId == movieId);
+            var order = _unitOfWork.Orders.Where(x => x.CustomerId == customerId && x.MovieId == movieId).FirstOrDefault();
             if (order!=null)
             {
                 return new ErrorResult("You already have this movie");
@@ -106,7 +107,7 @@ namespace MovieStore.Business.Concrete
         }
         public IDataResult<Customer> GetByMail(string mail)
         {
-            var customer = _unitOfWork.Customers.Get(x => x.Email == mail);
+            var customer = _unitOfWork.Customers.Where(x => x.Email == mail).FirstOrDefault();
             if (customer is null)
             {
                 return new ErrorDataResult<Customer>("Customer not found");
@@ -116,7 +117,7 @@ namespace MovieStore.Business.Concrete
 
         public IDataResult<List<OrdersDto>> GetMyOrders(Customer customer)
         {
-            var customerOrders = _unitOfWork.Orders.GetAll(x => x.CustomerId == customer.Id,x=>x.Customer,x=>x.Movie);
+            var customerOrders = _unitOfWork.Orders.Where(x => x.CustomerId == customer.Id).Include(x=>x.Customer).Include(x=>x.Movie).ToList();
             return new SuccessDataResult<List<OrdersDto>>(_mapper.Map<List<OrdersDto>>(customerOrders));
         }
     }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MovieStore.Business.Abstract;
 using MovieStore.Core.Extensions;
+using System.Threading.Tasks;
 
 namespace MovieStore.WebAPI.Controllers
 {
@@ -20,9 +21,9 @@ namespace MovieStore.WebAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var result = _customerService.Delete(id);
+            var result = await _customerService.Delete(id);
             if (result.Success)
             {
                 return NoContent();
@@ -50,7 +51,7 @@ namespace MovieStore.WebAPI.Controllers
 
         [Authorize(Roles ="Customer")]
         [HttpPost("buymovie/{id}")]
-        public IActionResult BuyMovie(int id)
+        public async Task<IActionResult> BuyMovie(int id)
         {
             var customer = _customerService.GetByMail(HttpContext.User.GetAuthenticatedUserEmail());
             if (!customer.Success)
@@ -64,7 +65,7 @@ namespace MovieStore.WebAPI.Controllers
                 return BadRequest(movie.Message);
             }
 
-            var result = _customerService.BuyMovie(customer.Data, movie.Data);
+            var result = await _customerService.BuyMovie(customer.Data, movie.Data);
             if (result.Success)
             {
                 return Ok(result.Message);

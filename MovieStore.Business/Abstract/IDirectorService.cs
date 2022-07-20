@@ -10,9 +10,9 @@ namespace MovieStore.Business.Abstract
 {
     public interface IDirectorService
     {
-        IResult Add(DirectorAddDto directorAddDto);
-        IResult Delete(int directorId);
-        IResult Update(int directorId, DirectorUpdateDto directorUpdateDto);
+        Task<IResult> Add(DirectorAddDto directorAddDto);
+        Task<IResult> Delete(int directorId);
+        Task<IResult> Update(int directorId, DirectorUpdateDto directorUpdateDto);
         IDataResult<List<DirectorsDto>> GetAll();
         IDataResult<DirectorDetailDto> GetById(int directorId);
     }

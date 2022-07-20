@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MovieStore.DataAccess.Abstract
 {
-    public interface IDirectorRepository : IEntityRepository<Director>
+    public interface IDirectorRepository : IGenericRepository<Director>
     {
     }
 }

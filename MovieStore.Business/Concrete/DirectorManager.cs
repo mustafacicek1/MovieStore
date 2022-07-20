@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using MovieStore.Business.Abstract;
 using MovieStore.Business.ValidationRules.FluentValidation;
 using MovieStore.Core.CrossCuttingConcerns.Validation;
@@ -7,10 +8,8 @@ using MovieStore.Core.Utilities.Results;
 using MovieStore.DataAccess.Abstract;
 using MovieStore.Entities.Concrete;
 using MovieStore.Entities.Dtos;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace MovieStore.Business.Concrete
@@ -24,17 +23,17 @@ namespace MovieStore.Business.Concrete
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
-        public IResult Add(DirectorAddDto directorAddDto)
+        public async Task<IResult> Add(DirectorAddDto directorAddDto)
         {
             ValidationTool.Validate(new DirectorAddDtoValidator(), directorAddDto);
 
             var director = _mapper.Map<Director>(directorAddDto);
-            _unitOfWork.Directors.Add(director);
-            _unitOfWork.SaveChanges();
+            await _unitOfWork.Directors.AddAsync(director);
+            await _unitOfWork.SaveChangesAsync();
             return new SuccessResult("Director added");
         }
 
-        public IResult Delete(int directorId)
+        public async Task<IResult> Delete(int directorId)
         {
             IResult result = BusinessRules.Run(CheckIfDirectorIdDontExist(directorId));
             if (result != null)
@@ -42,9 +41,9 @@ namespace MovieStore.Business.Concrete
                 return result;
             }
 
-            var director = _unitOfWork.Directors.Get(x => x.Id == directorId);
-            _unitOfWork.Directors.Delete(director);
-            _unitOfWork.SaveChanges();
+            var director = await _unitOfWork.Directors.GetByIdAsync(directorId);
+            _unitOfWork.Directors.Remove(director);
+            await _unitOfWork.SaveChangesAsync();
             return new SuccessResult();
         }
 
@@ -62,16 +61,12 @@ namespace MovieStore.Business.Concrete
                 return new ErrorDataResult<DirectorDetailDto>(result.Message);
             }
 
-            var director = _unitOfWork.Directors.Get(x => x.Id == directorId,x=>x.Movies);
+            var director = _unitOfWork.Directors.Where(x => x.Id == directorId).Include(x=>x.Movies).FirstOrDefault();
             DirectorDetailDto vm = _mapper.Map<DirectorDetailDto>(director);
-            foreach (var movie in director.Movies)
-            {
-                vm.Movies.Add(movie.Name);
-            }
             return new SuccessDataResult<DirectorDetailDto>(vm);
         }
 
-        public IResult Update(int directorId, DirectorUpdateDto directorUpdateDto)
+        public async Task<IResult> Update(int directorId, DirectorUpdateDto directorUpdateDto)
         {
             ValidationTool.Validate(new DirectorUpdateDtoValidator(), directorUpdateDto);
 
@@ -81,17 +76,16 @@ namespace MovieStore.Business.Concrete
                 return result;
             }
 
-            var director = _unitOfWork.Directors.Get(x => x.Id == directorId);
+            var director = await _unitOfWork.Directors.GetByIdAsync(directorId);
             director.Name = directorUpdateDto.Name == default ? director.Name : directorUpdateDto.Name;
             director.Surname = directorUpdateDto.Surname == default ? director.Surname : directorUpdateDto.Surname;
-            _unitOfWork.Directors.Update(director);
-            _unitOfWork.SaveChanges();
+            await _unitOfWork.SaveChangesAsync();
             return new SuccessResult("Director updated");
         }
 
         private IResult CheckIfDirectorIdDontExist(int directorId)
         {
-            var movie = _unitOfWork.Directors.Get(x => x.Id == directorId);
+            var movie = _unitOfWork.Directors.Where(x=>x.Id==directorId).FirstOrDefault();
             if (movie is null)
                 return new ErrorResult("Director not found");
 

@@ -3,7 +3,7 @@ using MovieStore.Entities.Concrete;
 
 namespace MovieStore.DataAccess.Abstract
 {
-    public interface IActorRepository : IEntityRepository<Actor>
+    public interface IActorRepository : IGenericRepository<Actor>
     {
     }
 }

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using MovieStore.Business.Abstract;
 using MovieStore.Business.ValidationRules.FluentValidation;
 using MovieStore.Core.CrossCuttingConcerns.Validation;
@@ -25,17 +26,17 @@ namespace MovieStore.Business.Concrete
             _mapper = mapper;
         }
 
-        public IResult Add(ActorAddDto actorAddDto)
+        public async Task<IResult> Add(ActorAddDto actorAddDto)
         {
             ValidationTool.Validate(new ActorAddDtoValidator(), actorAddDto);
 
             var actor = _mapper.Map<Actor>(actorAddDto);
-            _unitOfWork.Actors.Add(actor);
-            _unitOfWork.SaveChanges();
+            await _unitOfWork.Actors.AddAsync(actor);
+            await _unitOfWork.SaveChangesAsync();
             return new SuccessResult("Actor added");
         }
 
-        public IResult Delete(int actorId)
+        public async Task<IResult> Delete(int actorId)
         {
             IResult result = BusinessRules.Run(CheckIfActorIdDontExist(actorId));
             if (result != null)
@@ -43,9 +44,9 @@ namespace MovieStore.Business.Concrete
                 return result;
             }
 
-            var actor = _unitOfWork.Actors.Get(x => x.Id == actorId);
-            _unitOfWork.Actors.Delete(actor);
-            _unitOfWork.SaveChanges();
+            var actor = await _unitOfWork.Actors.GetByIdAsync(actorId);
+            _unitOfWork.Actors.Remove(actor);
+            await _unitOfWork.SaveChangesAsync();
             return new SuccessResult();
         }
 
@@ -63,17 +64,12 @@ namespace MovieStore.Business.Concrete
                 return new ErrorDataResult<ActorDetailDto>(result.Message);
             }
 
-            var actor = _unitOfWork.Actors.Get(x => x.Id == actorId);
-            var actorMovies = _unitOfWork.MovieActors.GetAll(x => x.ActorId == actorId,x=>x.Movie);
+            var actor = _unitOfWork.Actors.Where(x=>x.Id==actorId).Include(x=>x.MovieActors).ThenInclude(x=>x.Movie).FirstOrDefault();
             ActorDetailDto vm = _mapper.Map<ActorDetailDto>(actor);
-            foreach (var movie in actorMovies)
-            {
-                vm.Movies.Add(movie.Movie.Name);
-            }
             return new SuccessDataResult<ActorDetailDto>(vm);
         }
 
-        public IResult Update(int actorId, ActorUpdateDto actorUpdateDto)
+        public async Task<IResult> Update(int actorId, ActorUpdateDto actorUpdateDto)
         {
             ValidationTool.Validate(new ActorUpdateDtoValidator(), actorUpdateDto);
 
@@ -83,17 +79,16 @@ namespace MovieStore.Business.Concrete
                 return result;
             }
 
-            var actor = _unitOfWork.Actors.Get(x => x.Id == actorId);
+            var actor = await _unitOfWork.Actors.GetByIdAsync(actorId);
             actor.Name = actorUpdateDto.Name == default ? actor.Name : actorUpdateDto.Name;
             actor.Surname = actorUpdateDto.Surname == default ? actor.Surname : actorUpdateDto.Surname;
-            _unitOfWork.Actors.Update(actor);
-            _unitOfWork.SaveChanges();
+            await _unitOfWork.SaveChangesAsync();
             return new SuccessResult("Actor updated");
         }
 
         private IResult CheckIfActorIdDontExist(int actorId)
         {
-            var movie = _unitOfWork.Actors.Get(x => x.Id == actorId);
+            var movie = _unitOfWork.Actors.Where(x=>x.Id==actorId).FirstOrDefault();
             if (movie is null)
                 return new ErrorResult("Actor not found");
 
