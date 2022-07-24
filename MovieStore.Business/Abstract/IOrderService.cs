@@ -11,5 +11,6 @@ namespace MovieStore.Business.Abstract
     public interface IOrderService
     {
         IDataResult<List<OrdersDto>> GetAll();
+        IDataResult<List<OrdersDto>> GetCustomerOrders(int customerId);
     }
 }

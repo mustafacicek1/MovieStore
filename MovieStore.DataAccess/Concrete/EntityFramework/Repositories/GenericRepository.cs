@@ -1,20 +1,20 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MovieStore.Core.Entities.Abstract;
+using MovieStore.DataAccess.Abstract;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace MovieStore.Core.DataAccess.EntityFramework
+namespace MovieStore.DataAccess.Concrete.EntityFramework.Repositories
 {
     public class GenericRepository<T> : IGenericRepository<T>
         where T : class, IEntity, new()
     {
-        private readonly DbContext _context;
+        protected readonly MovieStoreDbContext _context;
         private readonly DbSet<T> _dbSet;
-        public GenericRepository(DbContext context)
+        public GenericRepository(MovieStoreDbContext context)
         {
             _context = context;
             _dbSet = _context.Set<T>();

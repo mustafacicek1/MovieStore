@@ -1,14 +1,9 @@
 ﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
 using MovieStore.Business.Abstract;
 using MovieStore.Core.Utilities.Results;
 using MovieStore.DataAccess.Abstract;
 using MovieStore.Entities.Dtos;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MovieStore.Business.Concrete
 {
@@ -23,8 +18,14 @@ namespace MovieStore.Business.Concrete
         }
         public IDataResult<List<OrdersDto>> GetAll()
         {
-            var orders = _unitOfWork.Orders.GetAll().Include(x=>x.Movie).Include(x=>x.Customer);
+            var orders = _unitOfWork.Orders.GetAllOrders();
             return new SuccessDataResult<List<OrdersDto>>(_mapper.Map<List<OrdersDto>>(orders));
+        }
+
+        public IDataResult<List<OrdersDto>> GetCustomerOrders(int customerId)
+        {
+            var customerOrders = _unitOfWork.Orders.GetCustomerOrders(customerId);
+            return new SuccessDataResult<List<OrdersDto>>(_mapper.Map<List<OrdersDto>>(customerOrders));
         }
     }
 }

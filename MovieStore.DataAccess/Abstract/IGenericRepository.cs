@@ -5,7 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
-namespace MovieStore.Core.DataAccess
+namespace MovieStore.DataAccess.Abstract
 {
     public interface IGenericRepository<T> where T : class, IEntity, new()
     {

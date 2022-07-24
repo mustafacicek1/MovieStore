@@ -8,10 +8,8 @@ using MovieStore.Core.Utilities.Results;
 using MovieStore.DataAccess.Abstract;
 using MovieStore.Entities.Concrete;
 using MovieStore.Entities.Dtos;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace MovieStore.Business.Concrete
@@ -58,7 +56,7 @@ namespace MovieStore.Business.Concrete
 
         public IDataResult<List<MoviesDto>> GetAll()
         {
-            var movies = _unitOfWork.Movies.Where(x=>x.Status==true).Include(x=>x.Genre).ToList();
+            var movies = _unitOfWork.Movies.GetAllMovies();
             return new SuccessDataResult<List<MoviesDto>>(_mapper.Map<List<MoviesDto>>(movies));
         }
 
@@ -70,9 +68,7 @@ namespace MovieStore.Business.Concrete
                 return new ErrorDataResult<MovieDetailDto>(result.Message);
             }
 
-            var movie = _unitOfWork.Movies.Where(x => x.Id == movieId && x.Status==true)
-                .Include(x=>x.Director).Include(x=>x.Genre).Include(x=>x.MovieActors).ThenInclude(x=>x.Actor).
-                FirstOrDefault();
+            var movie = _unitOfWork.Movies.GetMovieDetails(movieId);
             MovieDetailDto vm = _mapper.Map<MovieDetailDto>(movie);
             return new SuccessDataResult<MovieDetailDto>(vm);
         }
@@ -93,7 +89,6 @@ namespace MovieStore.Business.Concrete
             movie.GenreId = movieUpdateDto.GenreId == default ? movie.GenreId : movieUpdateDto.GenreId;
             movie.DirectorId = movieUpdateDto.DirectorId == default ? movie.DirectorId : movieUpdateDto.DirectorId;
             movie.Price = movieUpdateDto.Price == default ? movie.Price : movieUpdateDto.Price;
-            _unitOfWork.Movies.Update(movie);
             await _unitOfWork.SaveChangesAsync();
             return new SuccessResult("Movie updated");
         }
@@ -140,7 +135,7 @@ namespace MovieStore.Business.Concrete
 
         public IDataResult<List<MoviesDto>> GetInActiveMovies()
         {
-            var inActiveMovies =_unitOfWork.Movies.Where(x => x.Status == false).Include(x=>x.Genre).ToList();
+            var inActiveMovies = _unitOfWork.Movies.GetInactiveMovies();
             return new SuccessDataResult<List<MoviesDto>>(_mapper.Map<List<MoviesDto>>(inActiveMovies));
         }
     }

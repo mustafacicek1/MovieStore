@@ -1,18 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
-using MovieStore.Core.DataAccess.EntityFramework;
-using MovieStore.DataAccess.Abstract;
+﻿using MovieStore.DataAccess.Abstract;
 using MovieStore.Entities.Concrete;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MovieStore.DataAccess.Concrete.EntityFramework.Repositories
 {
     public class EfCustomerRepository : GenericRepository<Customer>, ICustomerRepository
     {
-        public EfCustomerRepository(DbContext context):base(context)
+        public EfCustomerRepository(MovieStoreDbContext context):base(context)
         {
 
         }

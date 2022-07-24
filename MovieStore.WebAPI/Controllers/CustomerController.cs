@@ -31,24 +31,6 @@ namespace MovieStore.WebAPI.Controllers
             return BadRequest(result.Message);
         }
 
-        [Authorize(Roles = "Customer")]
-        [HttpGet("myorders")]
-        public IActionResult GetMyOrders()
-        {
-            var customer = _customerService.GetByMail(HttpContext.User.GetAuthenticatedUserEmail());
-            if (!customer.Success)
-            {
-                return BadRequest(customer.Message);
-            }
-
-            var result = _customerService.GetMyOrders(customer.Data);
-            if (result.Success)
-            {
-                return Ok(result.Data);
-            }
-            return BadRequest(result.Message);
-        }
-
         [Authorize(Roles ="Customer")]
         [HttpPost("buymovie/{id}")]
         public async Task<IActionResult> BuyMovie(int id)

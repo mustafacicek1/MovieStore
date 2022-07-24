@@ -2,17 +2,10 @@
 using MovieStore.Business.Abstract;
 using MovieStore.Business.ValidationRules.FluentValidation;
 using MovieStore.Core.CrossCuttingConcerns.Validation;
-using MovieStore.Core.Utilities.Business;
 using MovieStore.Core.Utilities.Results;
 using MovieStore.Core.Utilities.Security.JWT;
-using MovieStore.DataAccess.Abstract;
 using MovieStore.Entities.Concrete;
 using MovieStore.Entities.Dtos;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MovieStore.Business.Concrete
 {

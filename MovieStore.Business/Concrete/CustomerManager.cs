@@ -1,15 +1,11 @@
-﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using MovieStore.Business.Abstract;
+﻿using MovieStore.Business.Abstract;
 using MovieStore.Core.Utilities.Business;
 using MovieStore.Core.Utilities.Results;
 using MovieStore.DataAccess.Abstract;
 using MovieStore.Entities.Concrete;
 using MovieStore.Entities.Dtos;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace MovieStore.Business.Concrete
@@ -17,11 +13,9 @@ namespace MovieStore.Business.Concrete
     public class CustomerManager : ICustomerService
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
-        public CustomerManager(IUnitOfWork unitOfWork,IMapper mapper)
+        public CustomerManager(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            _mapper = mapper;
         }
 
         public async Task<IResult> Add(Customer customer)
@@ -113,12 +107,6 @@ namespace MovieStore.Business.Concrete
                 return new ErrorDataResult<Customer>("Customer not found");
             }
             return new SuccessDataResult<Customer>(customer);
-        }
-
-        public IDataResult<List<OrdersDto>> GetMyOrders(Customer customer)
-        {
-            var customerOrders = _unitOfWork.Orders.Where(x => x.CustomerId == customer.Id).Include(x=>x.Customer).Include(x=>x.Movie).ToList();
-            return new SuccessDataResult<List<OrdersDto>>(_mapper.Map<List<OrdersDto>>(customerOrders));
         }
     }
 }

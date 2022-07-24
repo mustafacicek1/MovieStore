@@ -61,7 +61,7 @@ namespace MovieStore.Business.Concrete
                 return new ErrorDataResult<DirectorDetailDto>(result.Message);
             }
 
-            var director = _unitOfWork.Directors.Where(x => x.Id == directorId).Include(x=>x.Movies).FirstOrDefault();
+            var director = _unitOfWork.Directors.GetDirectorDetails(directorId);
             DirectorDetailDto vm = _mapper.Map<DirectorDetailDto>(director);
             return new SuccessDataResult<DirectorDetailDto>(vm);
         }

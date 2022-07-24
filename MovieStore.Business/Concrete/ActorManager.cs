@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
 using MovieStore.Business.Abstract;
 using MovieStore.Business.ValidationRules.FluentValidation;
 using MovieStore.Core.CrossCuttingConcerns.Validation;
@@ -8,10 +7,8 @@ using MovieStore.Core.Utilities.Results;
 using MovieStore.DataAccess.Abstract;
 using MovieStore.Entities.Concrete;
 using MovieStore.Entities.Dtos;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace MovieStore.Business.Concrete
@@ -64,7 +61,7 @@ namespace MovieStore.Business.Concrete
                 return new ErrorDataResult<ActorDetailDto>(result.Message);
             }
 
-            var actor = _unitOfWork.Actors.Where(x=>x.Id==actorId).Include(x=>x.MovieActors).ThenInclude(x=>x.Movie).FirstOrDefault();
+            var actor = _unitOfWork.Actors.GetActorDetails(actorId);
             ActorDetailDto vm = _mapper.Map<ActorDetailDto>(actor);
             return new SuccessDataResult<ActorDetailDto>(vm);
         }
